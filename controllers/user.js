@@ -20,7 +20,7 @@ export const updatedUser = async (req, res, next) => {
 }
 export const getUser = async (req, res, next) => {
     try {
-        const user = await User.findByIdAndDelete(req.params.id)
+        const user = await User.findById(req.params.id)
         res.status(200).json(user);
     }
     catch (err) {
@@ -29,10 +29,13 @@ export const getUser = async (req, res, next) => {
 }
 export const getUsers = async (req, res, next) => {
     try {
-        const users = await User.find()
-        res.status(200).json(Users);
-    }
-    catch (err) {
+        const users = await User.find().lean();
+        const transformedUsers = users.map(user => ({
+            id: user._id,
+            ...user
+        }));
+        res.status(200).json(transformedUsers);
+    } catch (err) {
         next(err);
     }
 }
